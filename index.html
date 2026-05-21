@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIXEL STORE</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+    #particles-js { position: fixed; width: 100%; height: 100%; z-index: -1; background-color: #0b0f17; top: 0; left: 0; }
+    body { margin: 0; font-family: Arial, sans-serif; color: white; direction: rtl; }
+    @keyframes rgb-text { 0% { color: #ff0000; text-shadow: 0 0 10px #ff0000; } 33% { color: #00ff00; text-shadow: 0 0 10px #00ff00; } 66% { color: #0000ff; text-shadow: 0 0 10px #0000ff; } 100% { color: #ff0000; text-shadow: 0 0 10px #ff0000; } }
+    header { background: rgba(17, 24, 39, 0.8); padding: 30px; text-align: center; font-family: 'Press Start 2P', cursive; font-size: 24px; border-bottom: 3px solid #00e5ff; animation: rgb-text 5s infinite; letter-spacing: 2px; }
+    .store-status-bar { background: rgba(31, 41, 55, 0.6); border-bottom: 1px solid #1f2937; padding: 10px; text-align: center; font-size: 14px; font-weight: bold; backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; gap: 8px; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px currentColor; }
+    .page { display: none; padding: 20px; }
+    #mainPage { display: block; text-align: center; padding-top: 15px; }
+    .products-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
+    @keyframes rgb-border { 0% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; } 33% { border-color: #00ff00; box-shadow: 0 0 15px #00ff00; } 66% { border-color: #0000ff; box-shadow: 0 0 15px #0000ff; } 100% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; } }
+    .gaming-product-card { background: rgba(17, 24, 39, 0.8); border: 2px solid #ff0000; border-radius: 20px; width: 220px; padding: 20px; text-align: center; margin: 10px auto; transition: 0.3s; backdrop-filter: blur(5px); animation: rgb-border 4s infinite linear; }
+    .gaming-product-card:hover { transform: scale(1.03); }
+    .btn-buy { background: linear-gradient(90deg, #00e5ff, #0086ff); border: none; padding: 12px; width: 100%; border-radius: 12px; cursor: pointer; color: #0b0f17; font-weight: bold; margin-top: 10px; }
+    .btn-payment { background: rgba(17, 24, 39, 0.8); border: 1px solid #00e5ff; color: white; padding: 15px; width: 100%; border-radius: 12px; cursor: pointer; margin-bottom: 10px; font-size: 16px; transition: 0.3s; }
+    .btn-soon { background: #1f2937; border: 1px solid #555; color: #888; padding: 15px; width: 100%; border-radius: 12px; cursor: not-allowed; margin-bottom: 10px; font-size: 16px; }
+    .back-btn { display: inline-block; margin: 10px; color: #00e5ff; cursor: pointer; font-weight: bold; }
+    input, select { background: #111827; border: 1px solid #00e5ff; color: white; padding: 12px; width: 90%; max-width: 300px; border-radius: 8px; text-align: center; margin-bottom: 15px; font-size: 14px; outline: none; }
+    .pay-box { background: #1f2937; padding: 15px; border-radius: 12px; margin: 15px auto; border: 1px dashed #00e5ff; max-width: 320px; display: none; }
+    .pay-number { font-size: 18px; font-weight: bold; color: #00e5ff; letter-spacing: 1px; margin: 10px 0; }
+</style>
+</head>
+<body>
+
+<!-- صفحة الصيانة بنمط Gaming -->
+<div id="maintenanceMode" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0b0f17; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; font-family: 'Press Start 2P', cursive; transition: opacity 0.5s;">
+    <div style="border: 2px solid #00e5ff; padding: 40px; border-radius: 20px; background: rgba(17, 24, 39, 0.9); box-shadow: 0 0 30px rgba(0, 229, 255, 0.2);">
+        <h1 style="color: #00e5ff; font-size: 20px; margin-bottom: 20px; text-shadow: 0 0 10px #00e5ff;">SYSTEM OFFLINE</h1>
+        <p style="font-size: 12px; margin-bottom: 30px; color: #aaa;">المتجر تحت الصيانة، أدخل الرمز للدخول:</p>
+        
+        <input type="password" id="passInput" placeholder="● ● ● ● ● ● ● ●" 
+            style="background: #000; border: 2px solid #ff0000; color: #ff0000; padding: 15px; width: 200px; border-radius: 10px; text-align: center; font-family: 'Press Start 2P'; margin-bottom: 20px; outline: none;">
+        
+        <button onclick="checkPassword()" 
+            style="background: #00e5ff; border: none; padding: 15px 30px; border-radius: 10px; cursor: pointer; color: #0b0f17; font-weight: bold; font-family: 'Press Start 2P'; display: block; width: 100%; transition: 0.3s;">
+            UNLOCK
+        </button>
+    </div>
+</div>
+
+<div id="particles-js"></div>
+<audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+<div class="store-status-bar"><span class="status-dot" style="background:#00ff00"></span><span>المتجر متصل (التسليم سريع الآن) 🟢</span></div>
+<header>PIXEL STORE</header>
+
+<div id="mainPage" class="page" style="display: block;">
+    <h1>نورت المتجر ✨</h1>
+    <div class="products-container">
+        <div onclick="playSound(); showPage('buyPage')" class="gaming-product-card"><h2>🛒 المتجر</h2></div>
+        <div onclick="playSound(); showPage('customPage')" class="gaming-product-card"><h2>💬 طلب خاص</h2></div>
+    </div>
+    <div class="products-container">
+        <div class="gaming-product-card" style="opacity: 0.6; cursor: not-allowed; animation: none; border-color: #1f2937; box-shadow: none;"><h2>💰 بيع</h2><span style="font-size: 10px; background: #ef4444; padding: 2px 8px; border-radius: 10px;">قريباً</span></div>
+        <div onclick="playSound(); showPage('reviewsPage')" class="gaming-product-card"><h2>⭐ التقييمات</h2></div>
+    </div>
+</div>
+
+<div id="buyPage" class="page">
+    <div onclick="playSound(); showPage('mainPage')" class="back-btn">⬅ العودة للرئيسية</div>
+    <div class="products-container">
+        <div class="gaming-product-card"><h3>دراقون كملوني</h3><p>50,000 دينار عراقي</p><button class="btn-buy" onclick="playSound(); selectProduct('دراقون كملوني', 50000)">شراء الآن</button></div>
+        <div class="gaming-product-card"><h3>سبرس</h3><p>15,000 دينار عراقي</p><button class="btn-buy" onclick="playSound(); selectProduct('سبرس', 15000)">شراء الآن</button></div>
+        <div class="gaming-product-card"><h3>جرما ومدنغ</h3><p>3,000 دينار عراقي</p><button class="btn-buy" onclick="playSound(); selectProduct('جرما ومدنغ', 3000)">شراء الآن</button></div>
+    </div>
+</div>
+
+<div id="customPage" class="page">
+    <div onclick="playSound(); showPage('mainPage')" class="back-btn">⬅ العودة للرئيسية</div>
+    <h2 style="text-align: center; color: #00e5ff;">قائمة الطلبات الخاصة 💬</h2>
+    <div class="products-container">
+        <div class="gaming-product-card"><h3>سكبدي تويلت</h3><p>400 ألف دينار عراقي</p><button class="btn-buy" onclick="playSound(); selectProduct('سكبدي تويلت', 400000)">طلب الآن</button></div>
+        <div class="gaming-product-card"><h3>هايدرا دراقون كملوني</h3><p>60 ألف دينار عراقي</p><button class="btn-buy" onclick="playSound(); selectProduct('هايدرا دراقون كملوني', 60000)">طلب الآن</button></div>
+        <div class="gaming-product-card"><h3>سباغتي توالتي</h3><p>4 آلاف دينار عراقي</p><button class="btn-buy" onclick="playSound(); selectProduct('سباغتي توالتي', 4000)">طلب الآن</button></div>
+        <div class="gaming-product-card"><h3>لاسيكرت</h3><p>5 آلاف دينار عراقي</p><button class="btn-buy" onclick="playSound(); selectProduct('لاسيكرت', 5000)">طلب الآن</button></div>
+        <div class="gaming-product-card"><h3>كجورو</h3><p>4 آلاف دينار عراقي</p><button class="btn-buy" onclick="playSound(); selectProduct('كجورو', 4000)">طلب الآن</button></div>
+        <div class="gaming-product-card"><h3>كبتانو</h3><p>10 آلاف دينار عراقي</p><button class="btn-buy" onclick="playSound(); selectProduct('كبتانو', 10000)">طلب الآن</button></div>
+        <div class="gaming-product-card"><h3>برجر وبطاطا</h3><p>7 آلاف دينار عراقي</p><button class="btn-buy" onclick="playSound(); selectProduct('برجر وبطاطا', 7000)">طلب الآن</button></div>
+        <div class="gaming-product-card"><h3>ستروبري الفنت</h3><p>1,250,000 دينار عراقي</p><button class="btn-buy" onclick="playSound(); selectProduct('ستروبري الفنت', 1250000)">طلب الآن</button></div>
+        <div class="gaming-product-card"><h3>ايسوك سيكولا</h3><p>2 ألف دينار عراقي</p><button class="btn-buy" onclick="playSound(); selectProduct('ايسوك سيكولا', 2000)">طلب الآن</button></div>
+        <div class="gaming-product-card"><h3>تيك تاك سهور</h3><p>3 آلاف دينار عراقي</p><button class="btn-buy" onclick="playSound(); selectProduct('تيك تاك سهور', 3000)">طلب الآن</button></div>
+    </div>
+</div>
+
+<div id="reviewsPage" class="page">
+    <div onclick="playSound(); showPage('mainPage')" class="back-btn">⬅ العودة للرئيسية</div>
+    <h2 style="text-align: center; color: #00e5ff;">⭐ آراء الأبطال</h2>
+    <div class="products-container"><div class="gaming-product-card" style="animation: none;"><p>"تعامل سريع ومضمون!"</p></div></div>
+</div>
+
+<div id="paymentPage" class="page">
+    <div onclick="playSound(); showPage('buyPage')" class="back-btn">⬅ العودة للخلف</div>
+    <h2 id="selectedProdTitle" style="color: #00e5ff;"></h2>
+    <h3 id="finalPriceDisplay"></h3>
+    
+    <div style="background: rgba(31, 41, 55, 0.5); padding: 15px; border-radius: 12px; max-width: 340px; margin: 15px auto; border: 1px solid #1f2937;">
+        <input type="text" id="robloxUser" placeholder="اسم حسابك في روبلوكس">
+        <input type="text" id="phoneNumber" placeholder="رقم هاتف فعال للتواصل">
+        <select id="adminSelect">
+            <option value="Hassanadel21">مراسلة الأدمن حسن ✈️</option>
+            <option value="rv1hkr">مراسلة الأدمن مصطفى ✈️</option>
+        </select>
+    </div>
+    
+    <div id="cardBox" class="pay-box">
+        <p>رقم الماستر كارد:</p>
+        <div class="pay-number" id="masterNum">5222490730431925</div>
+        <button onclick="copyNum('masterNum')" class="btn-buy">نسخ الرقم 📋</button>
+        <button class="btn-buy" style="background:#229ED9" onclick="finishOrder('ماستر كارد')">تأكيد الطلب ✈️</button>
+    </div>
+    
+    <div id="zainBox" class="pay-box">
+        <p>رقم زين كاش:</p>
+        <div class="pay-number" id="zainNum">07841722763</div>
+        <button onclick="copyNum('zainNum')" class="btn-buy">نسخ الرقم 📋</button>
+        <button class="btn-buy" style="background:#229ED9" onclick="finishOrder('زين كاش')">تأكيد الطلب ✈️</button>
+    </div>
+    
+    <div style="max-width:350px; margin:auto;">
+        <button class="btn-payment" onclick="showPayBox('cardBox')">💳 ماستر كارد</button>
+        <button class="btn-payment" onclick="showPayBox('zainBox')">📱 زين كاش</button>
+        <button class="btn-soon">📞 رصيد آسياسيل (قريباً)</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script>
+    // وظيفة التحقق من كلمة السر
+    function checkPassword() {
+        const secretCode = "76257780"; 
+        const input = document.getElementById('passInput').value;
+        if (input === secretCode) {
+            document.getElementById('maintenanceMode').style.opacity = '0';
+            setTimeout(() => { document.getElementById('maintenanceMode').style.display = 'none'; }, 500);
+        } else {
+            alert("رمز خاطئ! حاول مجدداً.");
+        }
+    }
+
+    particlesJS("particles-js", { "particles": { "number": { "value": 80 }, "color": { "value": "#00e5ff" }, "shape": { "type": "circle" }, "opacity": { "value": 0.5 }, "size": { "value": 3 }, "move": { "enable": true, "speed": 2 } } });
+    let currentProd = "", currentPrice = 0;
+    function playSound() { document.getElementById('clickSound').play(); }
+    function showPage(id) { document.querySelectorAll('.page').forEach(p => p.style.display = 'none'); document.getElementById(id).style.display = 'block'; }
+    function showPayBox(id) { document.querySelectorAll('.pay-box').forEach(b => b.style.display = 'none'); document.getElementById(id).style.display = 'block'; }
+    function copyNum(id) { navigator.clipboard.writeText(document.getElementById(id).innerText); alert("تم النسخ!"); }
+    function selectProduct(name, price) { currentProd = name; currentPrice = price; document.getElementById('selectedProdTitle').innerText = "المنتج: " + name; document.getElementById('finalPriceDisplay').innerText = "السعر: " + price.toLocaleString() + " دينار عراقي"; showPage('paymentPage'); }
+    
+    function finishOrder(method) { 
+        let user = document.getElementById('robloxUser').value;
+        let phone = document.getElementById('phoneNumber').value;
+        let admin = document.getElementById('adminSelect').value;
+        if(!user || !phone) { alert("يرجى ملء البيانات!"); return; }
+        
+        let msg = `طلب جديد: ${currentProd}\nالسعر: ${currentPrice}\nالحساب: ${user}\nالهاتف: ${phone}\nطريقة الدفع: ${method}\n\n⚠️ يرجى إرسال صورة الوصل لتأكيد الطلب!`;
+        window.open('https://t.me/' + admin + '?text=' + encodeURIComponent(msg), '_blank'); 
+    }
+</script>
+</body>
+</html>
